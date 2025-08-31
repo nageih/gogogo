@@ -1,475 +1,366 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>研究：两性外貌吸引力的感知差异</title>
+    <title>揭露造图界迄今为止最恶劣丑闻</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutrals & Slate Blue -->
-    <!-- Application Structure Plan: A single-page, thematic application with a sticky top navigation bar for easy access to five core analytical dimensions (Empirical, Socio-Cultural, Economic, Biological, Psychological) and a final Synthesis section. This structure is chosen to transform the linear research proposal into a non-linear, explorable experience. Users can jump between complex, interconnected topics at will, fostering a deeper understanding of how multiple factors contribute to a single perception. The flow is designed for discovery, moving from initial data questions to the deep-seated biases of the observer, culminating in a holistic conclusion. Key interactions include dynamic chart updates to show data ambiguity, clickable cards to reveal detailed information on-demand, and conceptual diagrams built with HTML/CSS to visualize abstract psychological models. This approach prioritizes user-guided exploration over a rigid, report-like presentation. -->
-    <!-- Visualization & Content Choices: 
-        1. Empirical Data: Report Info -> Statistical evidence for attractiveness ratings. Goal -> Demonstrate ambiguity. Viz -> Interactive Bar Chart (Chart.js). Interaction -> Buttons switch between hypothetical study results ('A', 'B', 'C'), with accompanying text updates. Justification -> Visually proves that "objective data" can be contradictory and is methodology-dependent.
-        2. Socio-Cultural Factors: Report Info -> Historical/media beauty standards. Goal -> Show evolution and commercialization. Viz -> HTML/CSS timeline & Doughnut Chart (Chart.js). Interaction -> Clicking timeline eras reveals info; doughnut chart shows media focus. Justification -> Timeline is effective for temporal data; doughnut chart clearly shows proportions.
-        3. Economic Factors: Report Info -> Investment in appearance. Goal -> Quantify the disparity. Viz -> Stacked Bar Chart (Chart.js). Interaction -> Static chart with clear labels and a summary text block. Justification -> A bar chart is the most direct way to compare quantified investment (time/money) between two groups.
-        4. Biological Factors: Report Info -> Sexual dimorphism, neoteny. Goal -> Simplify complex science. Viz -> Interactive HTML/CSS cards. Interaction -> "Click to expand" feature on cards. Justification -> Hides complexity initially, making the topics less intimidating and allowing users to delve deeper if interested.
-        5. Psychological Biases: Report Info -> Cognitive biases of the observer. Goal -> Visualize abstract mental models. Viz -> Conceptual diagram using HTML/CSS Flexbox. Interaction -> Highlighting cards for each bias on click. Justification -> Creates a tangible representation of intangible concepts like "perceptual filters", making them easier to grasp than text alone.
-        All choices confirm NO SVG/Mermaid, using Chart.js (Canvas) and structured HTML/CSS for all visuals. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover-color: #2563eb;
+            --border-color: #e5e7eb;
+            --text-color-primary: #1f2937;
+            --text-color-secondary: #4b5563;
+            --code-bg: #f3f4f6;
+            --quote-bg: #f0f9ff;
+            --quote-text: #0c4a6e;
+            --quote-border: var(--primary-color);
+        }
+
+        html.dark {
+            --border-color: #4b5563;
+            --text-color-primary: #e5e7eb;
+            --text-color-secondary: #9ca3af;
+            --code-bg: #374151;
+            --quote-bg: #1e293b;
+            --quote-text: #a5f3fc;
+            --quote-border: #22d3ee;
+        }
+
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: #FDFBF8;
-            color: #333;
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f9fafb; /* Fallback */
+            color: var(--text-color-primary);
+            transition: color 0.3s ease;
+            overflow-x: hidden;
         }
-        .nav-link {
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
+
+        /* Animated Aurora Background */
+        .aurora-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none;
         }
-        .nav-link:hover, .nav-link.active {
-            color: #3B82F6;
-            border-bottom-color: #3B82F6;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 320px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-        .card {
-            background-color: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .btn-active {
-            background-color: #3B82F6 !important;
-            color: #FFFFFF !important;
-            transform: scale(1.05);
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 2rem;
-            padding-left: 2.5rem;
-            border-left: 2px solid #D1D5DB;
-        }
-        .timeline-dot {
+        .aurora {
             position: absolute;
-            left: -0.6rem;
-            top: 0.1rem;
-            width: 1rem;
-            height: 1rem;
-            border-radius: 9999px;
-            background-color: #FFFFFF;
-            border: 2px solid #6B7280;
+            border-radius: 50%;
+            mix-blend-mode: multiply;
+            filter: blur(100px);
+            opacity: 0.3;
         }
-        .bias-card.active {
-            border-color: #3B82F6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        html.dark .aurora {
+            mix-blend-mode: screen;
+            opacity: 0.4;
         }
+        .aurora-1 { width: 600px; height: 600px; background: #818cf8; top: -20%; left: -10%; animation: move 25s infinite alternate; }
+        .aurora-2 { width: 500px; height: 500px; background: #fb923c; top: 20%; right: -20%; animation: move 20s infinite alternate-reverse; }
+        .aurora-3 { width: 400px; height: 400px; background: #60a5fa; bottom: -30%; left: 30%; animation: move 15s infinite alternate; }
+        @keyframes move { from { transform: translate(-100px, 50px) rotate(-30deg); } to { transform: translate(100px, -50px) rotate(30deg); } }
+
+        /* Reading Progress Bar */
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #60a5fa);
+            box-shadow: 0 0 10px var(--primary-color);
+            width: 0%; z-index: 99; transition: width 0.1s linear;
+        }
+
+        /* Glassmorphism Card */
+        .main-content-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        html.dark .main-content-card {
+            background: rgba(31, 41, 55, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Markdown Body Styles */
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem;
+            scroll-margin-top: 2rem; transition: border-color 0.3s ease;
+            color: var(--text-color-primary);
+        }
+        .markdown-body h1 { margin-top: 0; border-bottom: none; padding-bottom: 0; }
+        .markdown-body p { line-height: 1.8; margin-bottom: 1.25rem; }
+        .markdown-body blockquote {
+            border-left: 4px solid var(--quote-border); padding: 1rem 1.5rem;
+            margin: 1.5rem 0; background-color: var(--quote-bg);
+            color: var(--quote-text); border-radius: 0.5rem; transition: all 0.3s ease;
+        }
+        .markdown-body blockquote p { margin-bottom: 0; }
+        .markdown-body code {
+            background-color: var(--code-bg); padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem; font-size: 0.9em; color: #dd1144;
+            transition: background-color 0.3s ease;
+        }
+        html.dark .markdown-body code { color: #ff739a; }
+        .markdown-body a { color: var(--primary-color); text-decoration: none; transition: all 0.2s ease-in-out; border-bottom: 1px solid transparent; }
+        .markdown-body a:hover { color: var(--primary-hover-color); border-bottom-color: var(--primary-hover-color); }
+        .markdown-body img { border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); max-width: 100%; height: auto; margin: 1rem auto; display: block; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .markdown-body img:hover { transform: scale(1.02); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1); }
+
+        /* Footnote References */
+        .footnote-ref {
+            vertical-align: super;
+            font-size: 0.75em;
+            line-height: 0;
+            margin-left: 2px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .footnote-ref:hover {
+            background-color: var(--primary-color);
+            color: white !important;
+        }
+
+        /* Footnotes */
+        .footnotes { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; transition: border-color 0.3s ease; }
+        .footnotes ol { padding-left: 1.5rem; list-style-type: decimal; }
+        .footnotes li { margin-bottom: 0.75rem; color: var(--text-color-secondary); }
+        .footnotes li:target { background-color: rgba(59, 130, 246, 0.1); border-radius: 4px; }
+
+        /* Lightbox for Images */
+        .lightbox { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; animation: fadeIn 0.3s; }
+        .lightbox-content { max-width: 90vw; max-height: 90vh; animation: zoomIn 0.3s; }
+        .lightbox-close { position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        .lightbox-close:hover { color: #ccc; }
+
+        /* Utility Buttons (To-Top, Theme) */
+        .util-btn {
+            display: flex; justify-content: center; align-items: center;
+            position: fixed; z-index: 98; border: none; outline: none;
+            background: var(--card-background); backdrop-filter: blur(10px);
+            color: var(--text-color-secondary); cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .util-btn:hover { color: var(--primary-color); transform: scale(1.1); }
+        #to-top-btn { display: none; bottom: 20px; right: 20px; opacity: 0; }
+        #theme-toggle-btn { top: 20px; right: 20px; overflow: hidden; }
+        #theme-toggle-btn svg { transition: transform 0.4s ease-in-out; }
+        html.dark #theme-toggle-btn .sun-icon { transform: translateY(100%) rotate(45deg); }
+        html.dark #theme-toggle-btn .moon-icon { transform: translateY(0) rotate(0); }
+        #theme-toggle-btn .sun-icon { transform: translateY(0) rotate(0); }
+        #theme-toggle-btn .moon-icon { transform: translateY(-100%) rotate(-45deg); position: absolute; }
+
+
+        /* Animation Keyframes */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { transform: scale(0.9); } to { transform: scale(1); } }
+        
+        /* On-Scroll Fade-in Animation (Subtler) */
+        .fade-in-element { opacity: 0; transform: translateY(10px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .fade-in-element.is-visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
-<body>
-    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-4">
-            <div class="flex flex-wrap justify-center items-center py-2 md:py-1">
-                <a href="#intro" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">简介</a>
-                <a href="#empirical" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">实证检验</a>
-                <a href="#socio-cultural" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">社会文化</a>
-                <a href="#economic" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">行为经济</a>
-                <a href="#biological" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">生物进化</a>
-                <a href="#psychological" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">认知偏见</a>
-                <a href="#synthesis" class="nav-link text-sm md:text-base font-medium py-2 px-3 md:px-4">综合结论</a>
-            </div>
-        </nav>
-    </header>
+<body class="text-gray-800">
 
-    <main class="container mx-auto p-4 md:p-8">
-        <section id="intro" class="text-center my-12 md:my-20 scroll-mt-20">
-            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-4">解构“颜值”：一项关于两性吸引力感知的综合研究</h1>
-            <p class="max-w-3xl mx-auto text-lg text-gray-600">
-                本研究旨在客观、中立地探究“女性平均颜值似乎高于男性”这一社会现象。我们不预设其为事实，而是从多个维度系统性地分析导致这种“感知差异”的背后原因，最终形成一个严谨、详实的结论。
+    <div class="aurora-background">
+        <div class="aurora aurora-1"></div>
+        <div class="aurora aurora-2"></div>
+        <div class="aurora aurora-3"></div>
+    </div>
+    <div id="progress-bar"></div>
+
+    <button id="theme-toggle-btn" class="util-btn" title="切换主题">
+        <svg class="sun-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg class="moon-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </button>
+
+    <main class="main-content-card max-w-4xl mx-auto p-6 sm:p-8 md:p-12 rounded-2xl shadow-2xl my-8 sm:my-12">
+        <header class="text-center pb-8 mb-8 border-b dark:border-gray-700 fade-in-element" style="border-color: var(--border-color)">
+             <h1 class="text-4xl md:text-5xl font-bold">揭露造图界迄今为止最恶劣丑闻</h1>
+             <div class="mt-4 flex items-center justify-center space-x-4 text-sm" style="color: var(--text-color-secondary);">
+                <span>作者：Cat</span>
+                <span class="text-gray-400 dark:text-gray-600">|</span>
+                <span>发布于：2025年8月31日</span>
+            </div>
+        </header>
+
+        <article class="markdown-body">
+            <!-- Content starts here -->
+            <h2 class="text-3xl font-semibold">先说目标</h2>
+            <p class="fade-in-element">在昨天（2025.8.30）晚上的小地图直播中，我（Cat）看到了<strong>极其恶劣的抄袭行为</strong>，以及部分观众似乎无法正确意识到这种行为的恶劣。为了不影响昨天的直播，于是我在这里表达一下自己的看法，尽量让各位普通观众意识到这种行为的恶劣之处，同时请作者给出合理的道歉。</p>
+            <p class="fade-in-element"><mark class="bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-200 rounded px-1 py-0.5">特意说明，这里仅讨论地图中存在的抄袭行为。至于其他地图中同样有争议性的内容，包括但不限于<strong>“抽象”<s>（低俗）</s>剧情</strong>，<strong>NTR剧情</strong>等，这里不纳入讨论，请这层楼回复的观众们注意。</mark></p>
+            
+            <h2 class="text-3xl font-semibold">恶劣的复制行为</h2>
+            
+            <h3 class="text-2xl font-semibold">证据</h3>
+            <p class="fade-in-element">这里并不多说，因为作者已经完全承认他剽窃了<a href="https://www.bilibili.com/video/BV1SQ4y1H73A/">《小游戏的King》</a>这张地图，具体细节感兴趣可以私信我，在此放点对比图。<a href="#fn3" id="ref3" class="footnote-ref">3</a></p>
+            
+            <h3 class="text-2xl font-semibold">简单分析</h3>
+            <p class="fade-in-element">稍加对比，我们不难发现，这早已超出了“学习”或“借鉴”的范畴，而是近乎<strong>逐字逐句的复刻</strong>。这绝非危言S-un。从计分板的命名，到变量名的设置，还有文件结构与tag名，<strong>甚至连代码中的注释</strong>，都与原作如出一辙。我无法想象，作者在构建其数据包时，内心究竟是何种感受。透过屏幕，我所看到的，只有对他人劳动成果赤裸裸的藐视与侵占。</p>
+            <p class="fade-in-element">此外，据评论区反映，该地图的文案部分也涉嫌抄袭游戏《爱之巢》。虽然我本人未曾玩过这款游戏，无法第一时间提供证据，但目前作者本人同样承认了此事。</p>
+            
+            <h3 class="text-2xl font-semibold">未获得许可</h3>
+            <blockquote class="fade-in-element">
+                <p><strong>“原作作者又没找上门，以前那么多地图不也相互借鉴吗？为什么单单针对他？”</strong></p>
+            </blockquote>
+            <p class="fade-in-element">我理解一些观众可能会有这样的疑问。这背后其实涉及到一个非常重要的概念：<strong>许可证（License）</strong><a href="#fn1" id="ref1" class="footnote-ref">1</a>。简单来说，许可证是创作者用来声明“我的作品可以（或不可以）被如何使用”的法律工具。在之前的地图中，许多造图师在制作地图时，如果使用了他人的资源，他们会遵循两种基本准则：要么，该资源本身就遵循了允许自由使用的许可协议；要么，他们会主动联系原作者，在征得同意后才进行使用。这体现的是对他人劳动的基本尊重。</p>
+            <p class="fade-in-element">而本次事件中的作者，显然两者都没有做到。</p>
+            <p class="fade-in-element">这里需要说明的是，如果在公共领域发表的作品不包含许可证，那默认是ARR（保留所有权利）。也就是说，没有作者本人授权，这张地图是不允许被复制。同时根据作者地图发布平台爱发电的<a href="https://afdian.com/term">《爱发电使用协议与条款》</a>，其中的3.1.1条款<a href="#fn2" id="ref2" class="footnote-ref">2</a>明确指出<code>创作者享有著作权或取得合法授权</code>。</p>
+            <p class="fade-in-element">因此，那种“只要作者没发现就没事”的想法，不仅是一种极其危险的侥幸心理，更是对整个创作生态规则的公然践踏。</p>
+            
+            <h3 class="text-2xl font-semibold">态度恶劣</h3>
+            <p class="fade-in-element">如果说，上述的行为可以归结为法律意识淡薄或一时糊涂，那么事发后作者的态度，则彻底暴露了其对创作缺乏最起码的敬畏之心。倘若作者在被指出问题后，能立刻认识到错误的严重性，坦然承认，诚恳道歉，并积极尝试联系原作者寻求谅解（即便这是“先斩后奏”，也算是一种补救），或许这件事的性质还不会如此恶劣。然后我在造图群中看到的确实这种态度。</p>
+            <p class="fade-in-element"><code>换个图我也会啊</code>，<code>可以做成不一样的呀</code>，<code>我知道怎么做的</code> 等发言实在难以让我们信服。而在解释中说出的 <code>不是抄的，坐标都不同</code> 更是贻笑大方，这就像是抄作业，但是只改了个题号就直接写答案。即使在后续他表达了可以重做一遍的意愿，也实在是没有说服力。</p>
+            <p class="fade-in-element">更值得深思的是，在事件败露之前，作者似乎并未有过不要钱的打算。而在抄袭行为被公之于众后，他却立刻改口声称“不要钱”。这背后隐藏的，又是怎样一种心态？是认为“只要不收费，抄袭就情有可原”？还是盘算着“只要不被发现，就能心安得理地将他人的成果变现”？我们不得而知，但这其中的投机与侥幸，令人心寒。</p>
+            
+            <figure class="my-8 fade-in-element">
+                <img src="https://img.cdn1.vip/i/68b3b3f23eb46_1756607474.webp" alt="作者在群聊中的发言截图">
+                <figcaption class="text-center text-sm mt-2" style="color: var(--text-color-secondary);">作者在群聊中的发言截图，显示其态度</figcaption>
+            </figure>
+            
+            <h2 class="text-3xl font-semibold">总结</h2>
+            <p class="fade-in-element">抛开这张地图的其他内容不谈，作者的剽窃行为及其后续表现，无疑是极其恶劣的。从代码的生搬硬套，到事后的百般辩解与毫无诚意的悔改，这一切，都与部分观众口中的“佳作”二字相去甚远。</p>
+            <p class="fade-in-element">如果这种地图被鼓励甚至被赞扬，可想而知那以后的造图环境会成为什么样？当越来越多的翻版“qz”频繁出现，即使有“节目效果”，但是真的能算是合格的地图吗？</p>
+            <p class="fade-in-element">昨天直播的弹幕，有人提到开局标明作者了就可以，这很明显是不合理的。原作者的协议也并非MIT协议，并非简单署名就能取得授权。希望各位观众理性思考，不要只是简单认为，有“节目效果”就是好地图，又或者是觉得不给钱就没事了。</p>
+            <p class="fade-in-element">甚至有弹幕用版权小将代指这种合理维权行为，这真的是异化这种维权行为，给更多剽窃的作者提供理由，更是令产出高质量地图的造图师寒心。</p>
+            <p class="fade-in-element">我真诚地希望，每一位喜欢看小地图的观众，都能清晰地认识到此类行径的严重危害。<strong>抵制抄袭，不仅仅是为某一位被侵权的作者发声，更是为了守护我们每个人的直播内容。</strong> 只有这样，我们才能在未来，看到更多真正优秀、饱含造图师心血的佳作不断涌现。这难道不正是我们共同的期盼吗？</p>
+            
+            <p class="fade-in-element mt-8 p-4 rounded-lg bg-blue-50 dark:bg-slate-800 border-l-4 border-blue-400 dark:border-blue-500">
+                <strong>更新：</strong>已确定该地图还涉嫌抄袭Spooky Mansion 1.0和Sun Guardian 2两张地图，性质更为恶劣，希望作者能给出合理解释。
             </p>
-        </section>
-
-        <section id="empirical" class="my-16 md:my-24 scroll-mt-20">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800">第一部分：现象的实证检验</h2>
-            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">“女性平均颜值更高”是客观事实，还是数据解读的幻象？大规模的实证研究往往因方法论的差异而得出不同甚至矛盾的结论。这揭示了“客观”衡量颜值的巨大挑战。</p>
-            <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-                <div class="text-center mb-6">
-                    <p class="text-lg font-semibold mb-2">模拟不同研究方法的结论</p>
-                    <div id="empirical-buttons" class="flex justify-center space-x-2 md:space-x-4">
-                        <button data-study="A" class="btn btn-active bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm md:text-base">研究 A</button>
-                        <button data-study="B" class="btn bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm md:text-base">研究 B</button>
-                        <button data-study="C" class="btn bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm md:text-base">研究 C</button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="empiricalChart"></canvas>
-                </div>
-                <div id="empirical-text" class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
-                    <h4 class="font-bold text-blue-800">研究 A 结论：女性评分显著更高</h4>
-                    <p class="text-sm text-blue-700 mt-1"><strong>方法论缺陷：</strong>可能存在样本选择偏差，例如，数据来源于一个女性用户更倾向于上传精修照片的社交平台。评分者构成也可能影响结果。</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="socio-cultural" class="my-16 md:my-24 scroll-mt-20">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800">第二部分：社会文化因素</h2>
-            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">美，并非一成不变。社会文化在不同历史时期、不同地域，为两性量身定制了截然不同的审美模板。当代媒体与消费主义更是将女性的“美”推向了标准化和精细化的极致。</p>
-            <div class="grid md:grid-cols-5 gap-8">
-                <div class="md:col-span-3">
-                    <h3 class="font-semibold text-xl mb-4 text-gray-700">审美标准的历史演变</h3>
-                    <div class="relative">
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <h4 class="font-semibold">古希腊罗马</h4>
-                            <p class="text-sm text-gray-600">男性美强调肌肉、力量与和谐的身体比例；女性美则在于丰腴、柔和的曲线。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <h4 class="font-semibold">中世纪欧洲</h4>
-                            <p class="text-sm text-gray-600">禁欲主义下，外在美被抑制。女性美以精神性、苍白和纤弱为特征。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <h4 class="font-semibold">20世纪初</h4>
-                            <p class="text-sm text-gray-600">女性追求独立、中性化的“男孩”风格；男性则以硬朗、阳刚为美。</p>
-                        </div>
-                        <div class="timeline-item border-l-transparent pb-0">
-                            <div class="timeline-dot"></div>
-                            <h4 class="font-semibold">当代社交媒体时代</h4>
-                            <p class="text-sm text-gray-600">女性审美趋于精细化、多元化但也更标准化（如网红脸）；男性审美开始更多样，但主流仍与力量、稳重挂钩。</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="md:col-span-2">
-                     <h3 class="font-semibold text-xl mb-4 text-gray-700 text-center">媒体与消费主义的塑造</h3>
-                    <div class="card p-4 rounded-lg shadow-lg text-center h-full flex flex-col justify-center">
-                        <div class="chart-container !h-64 md:!h-72">
-                            <canvas id="mediaChart"></canvas>
-                        </div>
-                        <p class="mt-4 text-gray-600 text-sm">大众媒体和广告业对女性外貌的关注度和商业化程度，远超男性，这强化了社会对女性“必须美丽”的隐性期望。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="economic" class="my-16 md:my-24 scroll-mt-20">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800">第三部分：行为与经济因素</h2>
-            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">社会压力的差异，直接转化为两性在“形象投资”上的巨大鸿沟。从时间到金钱，女性在个人形象管理上的投入远高于男性，这客观上提升了女性群体的平均精致度。</p>
-            <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-                <h3 class="font-semibold text-xl mb-4 text-center text-gray-700">两性在形象管理上的投入差异</h3>
-                <div class="chart-container">
-                    <canvas id="investmentChart"></canvas>
-                </div>
-                <p class="text-center text-xs text-gray-500 mt-2">数据为示意，反映普遍趋势。</p>
-            </div>
-        </section>
-
-        <section id="biological" class="my-16 md:my-24 scroll-mt-20">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800">第四部分：生物学与进化心理学视角</h2>
-            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">抛开社会文化，人类的生物学本能和进化历程，也可能为这种感知差异提供了某种“硬件基础”。我们的审美偏好，或许早已被写在基因里。</p>
-            <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="card p-6 rounded-lg">
-                    <h3 class="font-bold text-lg text-center mb-2">性二态性 (Sexual Dimorphism)</h3>
-                    <p class="text-sm text-gray-600">男女在生理结构上存在天然差异。女性通常拥有更小的骨架、更平滑的皮肤和更丰满的皮下脂肪，这些特征在许多文化中与“美”和“年轻”相关联。</p>
-                </div>
-                <div class="card p-6 rounded-lg">
-                    <h3 class="font-bold text-lg text-center mb-2">性选择理论 (Sexual Selection)</h3>
-                    <p class="text-sm text-gray-600">进化心理学认为，外貌是健康和生育能力的信号。由于女性的生育资源更有限，她们的外貌可能在择偶中扮演了更关键的信号角色，从而受到更强的选择压力。</p>
-                </div>
-                <div class="card p-6 rounded-lg">
-                    <h3 class="font-bold text-lg text-center mb-2">新妇幼态 (Neoteny) 偏好</h3>
-                    <p class="text-sm text-gray-600">人类普遍偏好“幼态”特征（大眼睛、小下巴）。这些特征在成年女性身上比男性更显著，因此女性可能更容易触发我们天生的“可爱”或“美”的感知反应。</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="psychological" class="my-16 md:my-24 scroll-mt-20">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800">第五部分：观察者心理与认知偏见</h2>
-             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">最终，颜值是一种主观判断。我们并非客观的“相机”，而是带着一套复杂的“滤镜”在观察世界。这些认知偏见，可能是形成“颜值感知差异”的关键一环。</p>
-            <div id="bias-container" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bias-card card p-5 rounded-lg text-center cursor-pointer" data-bias="availability">
-                    <div class="text-4xl mb-3">🧠</div>
-                    <h3 class="font-bold">可得性启发</h3>
-                    <p class="text-sm text-gray-600 mt-2">媒体和日常中，精心打扮的女性形象远多于男性。当我们评估“平均颜值”时，脑中更容易提取出高质量的女性样本。</p>
-                </div>
-                 <div class="bias-card card p-5 rounded-lg text-center cursor-pointer" data-bias="asymmetry">
-                    <div class="text-4xl mb-3">⚖️</div>
-                    <h3 class="font-bold">评价标准不对称</h3>
-                    <p class="text-sm text-gray-600 mt-2">评价女性时更聚焦于五官和谐与精致度；评价男性时则可能融入身高、力量感等非纯颜值因素，分散了标准。</p>
-                </div>
-                <div class="bias-card card p-5 rounded-lg text-center cursor-pointer" data-bias="orientation">
-                    <div class="text-4xl mb-3">❤️</div>
-                    <h3 class="font-bold">性取向滤镜</h3>
-                    <p class="text-sm text-gray-600 mt-2">观察者的性取向会系统性地影响其对两性颜值的评分。例如，异性恋男性可能对女性的细节更敏感，评分标准更苛刻或更宽容。</p>
-                </div>
-                <div class="bias-card card p-5 rounded-lg text-center cursor-pointer" data-bias="gender">
-                    <div class="text-4xl mb-3">👤</div>
-                    <h3 class="font-bold">观察者性别</h3>
-                    <p class="text-sm text-gray-600 mt-2">观察者自身的性别也会影响评判。同性间的评价可能更挑剔，而异性间的评价则可能混合了择偶偏好。</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="synthesis" class="my-16 md:my-24 scroll-mt-20">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800">最终综合与结论</h2>
-            <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">“女性平均颜值更高”这一现象，并非简单的客观事实，而是一个由社会、行为、生物和心理因素复杂交织而成的“感知综合体”。</p>
-            <div class="bg-white p-8 rounded-lg shadow-xl border border-gray-200">
-                <h3 class="text-xl font-bold mb-4 text-center">感知的多重成因模型</h3>
-                <div class="flex flex-col md:flex-row items-center justify-center text-center gap-4 p-4 rounded-lg bg-gray-50">
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 w-full">
-                        <div class="p-2 rounded-lg bg-red-100 border border-red-200"><p class="font-semibold text-sm text-red-800">社会文化</p></div>
-                        <div class="p-2 rounded-lg bg-yellow-100 border border-yellow-200"><p class="font-semibold text-sm text-yellow-800">行为经济</p></div>
-                        <div class="p-2 rounded-lg bg-green-100 border border-green-200"><p class="font-semibold text-sm text-green-800">生物进化</p></div>
-                        <div class="p-2 rounded-lg bg-purple-100 border border-purple-200"><p class="font-semibold text-sm text-purple-800">认知偏见</p></div>
-                        <div class="p-2 rounded-lg bg-blue-100 border border-blue-200 col-span-2 md:col-span-1"><p class="font-semibold text-sm text-blue-800">实证数据</p></div>
-                    </div>
-                </div>
-
-                <div class="mt-6 space-y-4 text-gray-700">
-                    <p><strong class="text-gray-900">1. 感知大于事实：</strong>现有客观数据尚无统一结论证实女性的平均颜值评分在统计学上“显著”更高。这表明，我们讨论的更多是一种普遍的“感知”，而非一个可被精确量化的事实。</p>
-                    <p><strong class="text-gray-900">2. 多重因素的合力：</strong>这种感知的形成是多重因素复杂交织的结果：</p>
-                    <ul class="list-disc list-inside space-y-2 pl-4">
-                        <li><strong>社会文化</strong>为两性设定了不同的“美丽剧本”，并对女性施加了更大的外貌压力。</li>
-                        <li><strong>行为与经济因素</strong>是社会压力的直接体现，女性在形象上投入更多，客观上提升了群体的“精致度”和“观感”。</li>
-                        <li><strong>生物与进化</strong>因素可能提供了基础性的“硬件”差异和审美偏好，使女性的某些特征更容易被感知为“美”。</li>
-                        <li><strong>观察者的认知偏见</strong>是最终的“解码器”，我们通过可得性启发、不对称标准等滤镜进行加工，最终得出了“女性更美”的印象。</li>
-                    </ul>
-                    <p><strong class="text-gray-900">3. 一个有细微差别的解释：</strong>最接近本质的解释是：<span class="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded">由于社会文化的高要求和随之而来的高投入，女性群体向社会设定的“美”的标准进行了更高程度的“靠拢”，而观察者又通过一套有利于放大这种差异的认知滤镜进行观察，最终共同塑造了“女性平均颜值更高”这一普遍而深刻的社会感知。</span></p>
-                </div>
-            </div>
-        </section>
+            
+            <!-- Footnotes Section -->
+            <section class="footnotes fade-in-element">
+                <ol>
+                    <li id="fn1">部分引用自维基页面：<a href="https://w.wiki/7hzy" target="_blank" rel="noopener noreferrer">https://w.wiki/7hzy</a> <a href="#ref1" title="返回原文">↩</a></li>
+                    <li id="fn2">创作者承诺其在爱发电提供的内容、服务或商品（包括但不限于文字、图片、音频、视频、录音录像制品、软件程序、实体物品、定制服务、当面或远程咨询等形式，下文统称内容）享有著作权或取得合法授权，并同意授权爱发电恰当地在有限范围内共同享有这些内容的权益（包含爱发电网站“afdian.com/”，爱发电APP，爱发电公众号、微博等自有社交媒体账号或其他合作媒体账号），包括推广创作者的内容、创作者本身、爱发电本身或让爱发电平台的用户进行浏览、下载、使用或支付。 <a href="#ref2" title="返回原文">↩</a></li>
+                    <li id="fn3">
+                        <p class="mb-4">一模一样的命令</p>
+                        <p class="mb-2">原地图：</p>
+                        <figure class="my-4"><img src="https://img.cdn1.vip/i/68b3a72ce701a_1756604204.webp" alt="原地图代码截图1"></figure>
+                        <p class="mb-2">这张图：</p>
+                        <figure class="my-4"><img src="https://img.cdn1.vip/i/68b3a7291a11e_1756604201.webp" alt="抄袭地图代码截图1"></figure>
+                        <p class="mb-2">原地图：</p>
+                        <figure class="my-4"><img src="https://img.cdn1.vip/i/68b3bc1144309_1756609553.webp" alt="原地图代码截图2"></figure>
+                        <p class="mb-2">这张图：</p>
+                        <figure class="my-4"><img src="https://img.cdn1.vip/i/68b3bc115692f_1756609553.webp" alt="抄袭地图代码截图2"></figure>
+                        <a href="#ref3" title="返回原文">↩</a>
+                    </li>
+                </ol>
+            </section>
+        </article>
     </main>
+
+    <!-- Lightbox Structure -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="to-top-btn" class="util-btn" title="返回顶部">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+    </button>
     
-    <footer class="text-center py-8 border-t">
-        <p class="text-gray-500 text-sm">这是一个基于研究计划构建的交互式探索应用。</p>
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const chartData = {
-                A: {
-                    labels: ['男性平均分', '女性平均分'],
-                    datasets: [{
-                        label: '颜值评分 (1-10)',
-                        data: [5.8, 7.2],
-                        backgroundColor: ['#60A5FA', '#F87171'],
-                        borderColor: ['#3B82F6', '#EF4444'],
-                        borderWidth: 1
-                    }]
-                },
-                B: {
-                    labels: ['男性平均分', '女性平均分'],
-                    datasets: [{
-                        label: '颜值评分 (1-10)',
-                        data: [6.5, 6.6],
-                        backgroundColor: ['#60A5FA', '#F87171'],
-                        borderColor: ['#3B82F6', '#EF4444'],
-                        borderWidth: 1
-                    }]
-                },
-                C: {
-                    labels: ['男性平均分', '女性平均分'],
-                    datasets: [{
-                        label: '颜值评分 (1-10)',
-                        data: [7.1, 6.4],
-                        backgroundColor: ['#60A5FA', '#F87171'],
-                        borderColor: ['#3B82F6', '#EF4444'],
-                        borderWidth: 1
-                    }]
-                }
-            };
-            
-            const textData = {
-                A: {
-                    title: '研究 A 结论：女性评分显著更高',
-                    desc: '<strong>方法论缺陷：</strong>可能存在样本选择偏差，例如，数据来源于一个女性用户更倾向于上传精修照片的社交平台。评分者构成也可能影响结果。'
-                },
-                B: {
-                    title: '研究 B 结论：无显著差异',
-                    desc: '<strong>方法论缺陷：</strong>研究可能在严格控制的实验室环境下进行，使用了标准化的素颜照片，消除了日常“形象投资”带来的差异，但可能脱离了现实世界的真实观感。'
-                },
-                C: {
-                    title: '研究 C 结论：男性评分略高',
-                    desc: '<strong>方法论缺陷：</strong>评分者可能主要为特定性取向的女性群体，或评分标准中包含了“力量感”、“成熟度”等非纯粹颜值因素，导致评价标准发生偏移。'
-                }
-            };
-            
-            let empiricalChartInstance;
-            const empiricalCtx = document.getElementById('empiricalChart').getContext('2d');
-            
-            function createOrUpdateEmpiricalChart(studyKey) {
-                if (empiricalChartInstance) {
-                    empiricalChartInstance.destroy();
-                }
-                empiricalChartInstance = new Chart(empiricalCtx, {
-                    type: 'bar',
-                    data: chartData[studyKey],
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 10
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.dataset.label}: ${context.raw}`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-                
-                const empiricalTextDiv = document.getElementById('empirical-text');
-                empiricalTextDiv.querySelector('h4').innerHTML = textData[studyKey].title;
-                empiricalTextDiv.querySelector('p').innerHTML = textData[studyKey].desc;
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Theme Toggler ---
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const currentTheme = localStorage.getItem('theme');
 
-                document.querySelectorAll('#empirical-buttons button').forEach(b => b.classList.remove('btn-active'));
-                document.querySelector(`#empirical-buttons button[data-study="${studyKey}"]`).classList.add('btn-active');
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            };
+            
+            if (currentTheme) {
+                applyTheme(currentTheme);
+            } else if (userPrefersDark) {
+                applyTheme('dark');
             }
+
+            themeToggleBtn.addEventListener('click', function() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+
+            // --- Reading Progress Bar ---
+            const progressBar = document.getElementById('progress-bar');
+            function updateProgressBar() {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                if (scrollHeight === clientHeight) return;
+                const scrollPercent = (scrollTop / (scrollHeight - clientHeight)) * 100;
+                progressBar.style.width = `${scrollPercent}%`;
+            }
+
+            // --- Scroll to Top Button ---
+            const toTopBtn = document.getElementById('to-top-btn');
+            function handleScroll() {
+                if (window.scrollY > 200) {
+                    if (toTopBtn.style.display !== 'flex') {
+                        toTopBtn.style.display = 'flex';
+                        setTimeout(() => toTopBtn.style.opacity = '1', 10);
+                    }
+                } else {
+                    toTopBtn.style.opacity = '0';
+                    setTimeout(() => { if (window.scrollY < 200) toTopBtn.style.display = 'none'; }, 300);
+                }
+            }
+            toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }) );
             
-            createOrUpdateEmpiricalChart('A'); 
-
-            document.getElementById('empirical-buttons').addEventListener('click', (e) => {
-                if (e.target.tagName === 'BUTTON') {
-                    const studyKey = e.target.dataset.study;
-                    createOrUpdateEmpiricalChart(studyKey);
-                }
-            });
-
-            const mediaCtx = document.getElementById('mediaChart').getContext('2d');
-            new Chart(mediaCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['针对女性外貌', '针对男性外貌', '其他'],
-                    datasets: [{
-                        data: [65, 15, 20],
-                        backgroundColor: ['#F87171', '#60A5FA', '#D1D5DB'],
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: '媒体广告中外貌内容占比(示意)'
-                        }
-                    }
-                }
-            });
-
-            const investmentCtx = document.getElementById('investmentChart').getContext('2d');
-            new Chart(investmentCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['时间投入 (小时/周)', '金钱投入 (月均消费指数)'],
-                    datasets: [{
-                        label: '男性',
-                        data: [2.5, 30],
-                        backgroundColor: '#60A5FA',
-                    }, {
-                        label: '女性',
-                        data: [7.0, 85],
-                        backgroundColor: '#F87171',
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            stacked: false,
-                        },
-                        y: {
-                            stacked: false
-                        }
-                    },
-                     plugins: {
-                        legend: {
-                           position: 'top',
-                        }
-                    }
-                }
-            });
-
-            document.getElementById('bias-container').addEventListener('click', (e) => {
-                const card = e.target.closest('.bias-card');
-                if (card) {
-                    document.querySelectorAll('.bias-card').forEach(c => c.classList.remove('active'));
-                    card.classList.add('active');
-                }
-            });
-
-            const navLinks = document.querySelectorAll('nav a');
-            const sections = document.querySelectorAll('section');
-
             window.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (pageYOffset >= sectionTop - 100) {
-                        current = section.getAttribute('id');
-                    }
-                });
-
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href').substring(1) === current) {
-                        link.classList.add('active');
-                    }
-                });
+                updateProgressBar();
+                handleScroll();
             });
 
-            navLinks.forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
+            // --- Image Lightbox ---
+            const lightbox = document.getElementById('lightbox');
+            const articleImages = document.querySelectorAll('.markdown-body img');
+            
+            if(lightbox) {
+                const lightboxImg = document.getElementById('lightbox-img');
+                const closeBtn = document.querySelector('.lightbox-close');
+
+                articleImages.forEach(img => {
+                    img.addEventListener('click', () => {
+                        lightbox.style.display = 'flex';
+                        lightboxImg.src = img.src;
                     });
                 });
-            });
+                function closeLightbox() { lightbox.style.display = 'none'; }
+                closeBtn.addEventListener('click', closeLightbox);
+                lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+            }
 
+
+            // --- On-Scroll Fade-in Animation ---
+            const fadeElements = document.querySelectorAll('.fade-in-element');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            fadeElements.forEach(el => observer.observe(el));
         });
     </script>
 </body>
 </html>
+
+
+
